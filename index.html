@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SMART POULTRY FARM AI — Manajemen Ayam Petelur 30 Ekor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script>
+    try {
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+            },
+            colors: {
+              agro: {
+                950: '#052e16',
+                900: '#14532d',
+                800: '#166534',
+                700: '#15803d',
+                600: '#16a34a',
+                100: '#dcfce7',
+                50: '#f0fdf4'
+              },
+              harvest: {
+                600: '#b45309',
+                500: '#d97706',
+                400: '#f59e0b',
+                100: '#fef3c7',
+                50: '#fffbeb'
+              }
+            }
+          }
+        }
+      };
+    } catch (_) {}
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f3f6f4;
+      color: #0f172a;
+      margin: 0;
+      padding: 0;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.65; }
+    }
+    .pulse-dot {
+      animation: pulseDot 1.6s infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#f3f6f4] text-slate-900">
+
+  <!-- Toast Banner -->
+  <div id="spfa-toast" class="fixed top-4 left-1/2 -translate-x-1/2 -translate-y-24 opacity-0 z-[150] transition-all duration-300 pointer-events-none max-w-[92vw] w-max">
+    <div class="px-4 py-2.5 rounded-2xl bg-slate-900 text-white text-xs sm:text-sm font-semibold shadow-2xl border border-white/15 flex items-center gap-2">
+      <span id="spfa-toast-emoji">🔔</span>
+      <span id="spfa-toast-text">Notifikasi</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- 1. LOGIN GATE (#login-gate)                               -->
+  <!-- ========================================================= -->
+  <section id="login-gate" style="display: flex;" class="min-h-screen w-full items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-agro-950 via-agro-900 to-slate-900">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 sm:p-8 space-y-5">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-agro-600 to-agro-900 text-white flex items-center justify-center text-2xl shadow-lg shrink-0">
+            🐔
+          </div>
+          <div class="min-w-0">
+            <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-agro-100 text-agro-800">
+              Akses Kandang Terproteksi
+            </span>
+            <h1 class="text-lg sm:text-xl font-black tracking-tight text-slate-900 leading-tight mt-0.5 truncate">
+              SMART POULTRY FARM AI
+            </h1>
+          </div>
+        </div>
+        <span class="text-xs font-extrabold px-2.5 py-1 rounded-xl bg-harvest-100 text-harvest-600 shrink-0">
+          30 Ekor • 4×6m
+        </span>
+      </div>
+
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+        Masukkan <span class="font-bold text-slate-800">Sandi Sekali Pakai</span> untuk membuka dashboard. Setelah berhasil diklaim, sandi terkunci untuk orang lain dan perangkat ini mendapat <span class="font-bold text-agro-700">akses permanen</span>.
+      </p>
+
+      <form id="login-form" onsubmit="handleLoginFormSubmit(event)" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="login-user-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+              Nama Pengguna
+            </label>
+            <input
+              type="text"
+              id="login-user-name"
+              placeholder="Contoh: Ramdani"
+              class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-900 font-bold text-sm focus:outline-none focus:border-agro-600 focus:bg-white transition"
+            />
+          </div>
+          <div>
+            <label for="login-user-role" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+              Peran
+            </label>
+            <select
+              id="login-user-role"
+              class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-900 font-bold text-sm focus:outline-none focus:border-agro-600 focus:bg-white transition"
+            >
+              <option value="Pemilik">Pemilik</option>
+              <option value="Anak Kandang">Anak Kandang</option>
+              <option value="Mitra">Mitra</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="login-code-input" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+            Sandi Sekali Pakai
+          </label>
+          <div class="relative">
+            <input
+              type="password"
+              id="login-code-input"
+              autocomplete="off"
+              placeholder="Masukkan sandi..."
+              class="w-full pl-4 pr-12 py-3 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-900 font-extrabold text-sm tracking-wider focus:outline-none focus:border-agro-600 focus:bg-white transition"
+            />
+            <button
+              type="button"
+              id="btn-toggle-pass-vis"
+              onclick="toggleLoginPassVisibility()"
+              aria-label="Lihat atau sembunyikan sandi"
+              class="absolute inset-y-0 right-0 px-3.5 flex items-center text-slate-500 hover:text-slate-800 text-sm font-bold"
+            >
+              👁️
+            </button>
+          </div>
+          <p id="login-error-msg" class="hidden mt-2 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2"></p>
+        </div>
+
+        <button
+          type="submit"
+          id="btn-submit-login"
+          onclick="handleLoginFormSubmit(event)"
+          class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-agro-700 to-agro-600 hover:from-agro-800 hover:to-agro-700 text-white font-extrabold text-sm shadow-lg shadow-agro-700/25 active:scale-[0.99] transition flex items-center justify-center gap-2"
+        >
+          <span>🔓</span>
+          <span>Masuk ke Dashboard</span>
+        </button>
+      </form>
+
+      <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+        <span>🔒 Sandi disembunyikan &amp; sekali pakai.</span>
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            onclick="resetSessionAndPasscodes()"
+            class="font-bold text-harvest-600 hover:underline"
+          >
+            Reset Sesi Uji Coba
+          </button>
+          <button
+            type="button"
+            onclick="quickSandboxBypass()"
+            class="font-bold text-agro-700 hover:underline"
+          >
+            Masuk Langsung / Reset Sesi
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 2. MAIN APPLICATION SHELL (#app-shell)                    -->
+  <!-- ========================================================= -->
+  <div id="app-shell" style="display: none;" class="hidden min-h-screen flex-col">
+    <!-- Top Bar -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 px-3 sm:px-6 py-3">
+      <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-agro-700 to-agro-950 text-white flex items-center justify-center text-lg sm:text-xl font-black shrink-0">
+            🐔
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-sm sm:text-base font-black tracking-tight text-slate-900 truncate">SMART POULTRY FARM AI</span>
+              <span class="hidden md:inline-block text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-agro-100 text-agro-800">
+                Ayam Petelur • 30 Ekor • Kandang 4×6m
+              </span>
+            </div>
+            <p id="header-session-info" class="text-[11px] text-slate-500 font-medium truncate">
+              Pengguna • Akses Permanen
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Live Online Presence Badge + Popover -->
+          <div class="relative">
+            <button
+              type="button"
+              onclick="toggleOnlinePopover()"
+              class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-extrabold flex items-center gap-1.5 transition"
+            >
+              <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+              <span id="header-online-count">1 Online</span>
+            </button>
+
+            <div id="online-presence-popover" class="hidden fixed sm:absolute right-3 sm:right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 z-50">
+              <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
+                <div>
+                  <div class="text-xs font-black text-slate-900">Sedang Online di Web</div>
+                  <div class="text-[10px] text-slate-400">Real-time antar tab &amp; perangkat</div>
+                </div>
+                <button type="button" onclick="toggleOnlinePopover()" class="text-xs font-bold text-slate-400 hover:text-slate-700">✕</button>
+              </div>
+              <div id="online-presence-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick="switchTab('ai-smart')"
+            class="px-3 py-2 rounded-xl bg-agro-700 hover:bg-agro-800 text-white text-xs font-extrabold shadow-sm transition flex items-center gap-1"
+          >
+            <span>✨</span>
+            <span class="hidden sm:inline">AI Smart Input</span>
+            <span class="sm:hidden">AI</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tab Bar -->
+    <nav class="bg-white border-b border-slate-200/80 px-3 sm:px-6 sticky top-[58px] sm:top-[64px] z-20">
+      <div class="max-w-6xl mx-auto flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <button type="button" data-tab="dashboard" onclick="switchTab('dashboard')" class="spfa-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white transition">
+          📊 Dashboard
+        </button>
+        <button type="button" data-tab="ai-smart" onclick="switchTab('ai-smart')" class="spfa-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          ✨ AI Smart Input
+        </button>
+        <button type="button" data-tab="kesehatan-jadwal" onclick="switchTab('kesehatan-jadwal')" class="spfa-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          🩺 Kesehatan &amp; Jadwal
+        </button>
+        <button type="button" data-tab="transaksi-stok" onclick="switchTab('transaksi-stok')" class="spfa-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          💰 Transaksi &amp; Stok
+        </button>
+        <button type="button" data-tab="riwayat-akses" onclick="switchTab('riwayat-akses')" class="spfa-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          👥 Riwayat Akses
+        </button>
+        <button type="button" data-tab="admin-kode" onclick="switchTab('admin-kode')" class="spfa-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+          🔑 Admin Kode
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl w-full mx-auto px-3 sm:px-6 py-5 space-y-6 flex-1">
+
+      <!-- ===================================================== -->
+      <!-- TAB 1: DASHBOARD                                      -->
+      <!-- ===================================================== -->
+      <section id="tab-dashboard" class="spfa-tab-pane space-y-5">
+        <div class="rounded-3xl bg-gradient-to-r from-agro-900 via-agro-800 to-agro-950 text-white p-5 sm:p-6 shadow-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <span class="inline-block text-[11px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-white/15 text-harvest-400 mb-2">
+              Ayam Petelur • 30 Ekor • Kandang 4×6m
+            </span>
+            <h2 class="text-xl sm:text-2xl font-black tracking-tight">Dashboard Operasional Kandang</h2>
+            <p class="text-xs sm:text-sm text-agro-100/90 mt-1">
+              Ringkasan populasi aktif, produksi telur &amp; HDP, stok pakan, saldo kas, takaran pakan/ekor, obat, dan jadwal pembersihan kandang.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 shrink-0">
+            <button type="button" onclick="switchTab('ai-smart')" class="px-4 py-2.5 rounded-2xl bg-harvest-400 hover:bg-harvest-500 text-slate-950 font-extrabold text-xs sm:text-sm shadow transition">
+              + Input Cepat AI
+            </button>
+            <button type="button" onclick="switchTab('kesehatan-jadwal')" class="px-4 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm transition">
+              🩺 Kesehatan &amp; Jadwal
+            </button>
+          </div>
+        </div>
+
+        <!-- 5 KPI Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Populasi Aktif</div>
+            <div id="kpi-populasi" class="text-xl sm:text-2xl font-black text-slate-900 mt-1">30 Ekor</div>
+            <div id="kpi-populasi-sub" class="text-[11px] text-slate-500 mt-1">Mortalitas: 0 ekor</div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Telur Hari Ini</div>
+            <div id="kpi-telur-today" class="text-xl sm:text-2xl font-black text-agro-700 mt-1">0 Butir</div>
+            <div id="kpi-telur-total" class="text-[11px] text-slate-500 mt-1">Total panen: 0 butir</div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Rata-Rata HDP</div>
+            <div id="kpi-hdp" class="text-xl sm:text-2xl font-black text-harvest-600 mt-1">0.0%</div>
+            <div class="text-[11px] text-slate-500 mt-1">Target layer: 80%–92%</div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Sisa Stok Pakan</div>
+            <div id="kpi-stok-pakan" class="text-xl sm:text-2xl font-black text-slate-900 mt-1">0.0 kg</div>
+            <div id="kpi-pakan-terpakai" class="text-[11px] text-slate-500 mt-1">Terpakai: 0.0 kg</div>
+          </div>
+
+          <div class="col-span-2 sm:col-span-1 bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Saldo Kas</div>
+            <div id="kpi-saldo-kas" class="text-xl sm:text-2xl font-black text-agro-700 mt-1">Rp 0</div>
+            <div id="kpi-laba-bersih" class="text-[11px] text-slate-500 mt-1">Laba bersih: Rp 0</div>
+          </div>
+        </div>
+
+        <!-- Daily Harvest / HDP Chart -->
+        <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            <div>
+              <h3 class="text-sm sm:text-base font-black text-slate-900">Grafik Panen Telur &amp; HDP Harian</h3>
+              <p class="text-xs text-slate-500">Performa panen 7 hari terakhir terhadap populasi aktif</p>
+            </div>
+            <span id="dash-avg-pill" class="self-start sm:self-auto text-xs font-bold px-3 py-1 rounded-full bg-harvest-100 text-harvest-600">
+              Rata-rata: 0.0 butir/hari
+            </span>
+          </div>
+          <div id="dash-harvest-chart" class="grid grid-cols-7 gap-2 sm:gap-3 items-end h-44 pt-4 px-2 sm:px-4 bg-slate-50 rounded-2xl border border-slate-100"></div>
+        </div>
+
+        <!-- Quick Summary: Pakan/Ekor, Obat Terakhir & Jadwal Pembersihan -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-agro-700">🍽️ Pakan Per Ekor Hari Ini</span>
+              <button type="button" onclick="switchTab('kesehatan-jadwal')" class="text-[11px] font-bold text-agro-700 hover:underline">Atur</button>
+            </div>
+            <div id="dash-ration-gram" class="text-lg font-black text-slate-900 mt-1">115 gr / ekor</div>
+            <div id="dash-ration-detail" class="text-xs text-slate-500 mt-0.5">Total: 3.45 kg untuk 30 ekor</div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-700">💊 Obat &amp; Takaran Terakhir</span>
+              <button type="button" onclick="switchTab('kesehatan-jadwal')" class="text-[11px] font-bold text-purple-700 hover:underline">Detail</button>
+            </div>
+            <div id="dash-med-title" class="text-lg font-black text-slate-900 mt-1 truncate">Vita Stress</div>
+            <div id="dash-med-dose" class="text-xs text-slate-500 mt-0.5 truncate">Takaran: 5 gr / 10L air minum</div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-harvest-600">🧼 Pembersihan Kandang</span>
+              <button type="button" onclick="switchTab('kesehatan-jadwal')" class="text-[11px] font-bold text-harvest-600 hover:underline">Ja
